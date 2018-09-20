@@ -1,53 +1,53 @@
 from sklearn.model_selection import cross_val_score
 
 class OpenFlow:
-    def __init__(self, model):
+    def __init__(self, model, defaults=None):
         self.model = model
-        self.outputs = {}
+        self.inputs = {}
+        self.defaults = defaults or {}
 
-    def get_output(self, ds, name):
+    def get_input(self, name, ds):
         """
-        Retrieves the content of an output given a DataSource. The output acts like a filter over the columns of the DataSource.
+        Retrieves the content of an input given a DataSource. The input acts like a filter over the outputs of the DataSource.
 
-        Parameters
-        ----------
-        ds : openflow.DataSource
-            The DataSource from which the data are extracted.
-        name : str
-            The name of the output.
+        Args:
+            name (str): The name of the input.
+            ds (openflow.DataSource): The DataSource that will feed the data.
 
-        Returns
-        -------
-        pandas.DataFrame
-            The content of the output.
+        Returns:
+            pandas.DataFrame: The content of the input.
         """
-        columns = self.outputs.get(name)
-        return ds.get_dataframe()[columns]
+        columns = self.inputs.get(name)
+        df = ds.get_dataframe()
 
-    def add_output(self, name, columns):
-        """
-        Adds an output to the DataSource.
+        # set defaults
+        for column in columns:
+            if column not in df.columns:
+                df[column] = self.defaults.get(column)
 
-        Parameters
-        ----------
-        name : str
-            The name of the output.
-        columns : array-like
-            The columns to extract.
+        return df[columns]
+
+    def add_input(self, name, outputs):
         """
-        self.outputs[name] = columns
+        Adds an input.
+
+        Args:
+            name (str): The name of the input.
+            columns (list(str)): The outputs to extract from the DataSource.
+        """
+        self.inputs[name] = outputs
 
     def train(self, ds, limit=None, x_output='x', y_output='y'):
-        x = self.get_output(ds, x_output)
-        y = self.get_output(ds, y_output)
+        x = self.get_input(x_output, ds)
+        y = self.get_input(y_output, ds)
 
         if limit: x, y = x[-limit:], y[-limit:]
 
         self.model.fit(x.values, y.values.ravel())
 
     def benchmark(self, ds, limit=None, x_output='x', y_output='y'):
-        x = self.get_output(ds, x_output)
-        y = self.get_output(ds, y_output)
+        x = self.get_input(x_output, ds)
+        y = self.get_input(y_output, ds)
 
         if limit: x, y = x[-limit:], y[-limit:]
 
