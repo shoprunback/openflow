@@ -10,8 +10,8 @@ Welcome to OpenFlow's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   source/modules.rst
-   source/openflow.rst
+   source/modules
+   source/openflow
 
 Indices and tables
 ==================
