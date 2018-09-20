@@ -1,8 +1,8 @@
 from setuptools import setup
 
 setup(name='openflow',
-      version='0.1',
-      description='Automate data flows for machine learning',
+      version='0.1.2',
+      description='Automate data flows for machine learning.',
       url='http://github.com/shoprunback/openflow',
       author='Quentin Lapointe',
       author_email='quentin@shoprunback.com',
@@ -10,9 +10,7 @@ setup(name='openflow',
       packages=['openflow'],
       install_requires=[
         'numpy',
-        'minio',
         'pandas',
-        'psycopg2-binary',
         'scikit-learn',
         'scipy'
       ],
