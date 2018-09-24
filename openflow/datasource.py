@@ -7,11 +7,12 @@ class DataSource:
     Args:
         preprocess (lambda): Preprocess DataFrame before transformation
     """
-    def __init__(self, preprocess=None):
-        self.outputs = []
+    def __init__(self, run, preprocess=None):
+        self.run = run
         self.preprocess = preprocess or (lambda df: df)
-        self.data = None
+        self.context = None
         self.df = None
+        self.outputs = []
 
     def add_output(self, name, function):
         """
@@ -34,7 +35,7 @@ class DataSource:
             df (pandas.DataFrame): DataFrame to transform.
         """
         for name, function in self.outputs:
-            df[name] = df.apply(function, axis=1)
+            df[name] = function(df)
 
     def get_dataframe(self, force_computation=False):
         """
@@ -49,7 +50,7 @@ class DataSource:
         # returns df if it was already computed
         if self.df is not None and not force_computation: return self.df
 
-        self.df = self.run(self.data)
+        self.df = self.run(self.context)
 
         # compute df = transform(preprocess(df)
         self.df = self.preprocess(self.df)
@@ -57,11 +58,11 @@ class DataSource:
 
         return self.df
 
-    def set_data(self, data):
+    def set_context(self, context):
         """
-        Set data at runtime. Will be passed to run() function.
+        Set context for runtime. Will be passed to run() function.
 
         Args:
-            data (obj): Data to be passed to run().
+            context (obj): Context to be passed to run().
         """
-        self.data = data
+        self.context = context
