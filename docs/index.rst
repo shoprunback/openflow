@@ -6,6 +6,8 @@
 Welcome to OpenFlow's documentation!
 ====================================
 
+OpenFlow is an opensource Python library that automates data flows.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

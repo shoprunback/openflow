@@ -8,10 +8,10 @@ from openflow import DataSource
 
 class Postgres(DataSource):
     def __init__(self, query, preprocess=None):
-        super().__init__(preprocess)
-        self.query = query
+        super().__init__(Postgres.fetch, preprocess)
+        self.set_context({ 'query': query })
 
-    def run(self, data):
+    def fetch(context):
         try:
             creds = "host='{}' dbname='{}' user='{}' password='{}'".format(os.environ['POSTGRES_HOST'], os.environ['POSTGRES_DBNAME'], os.environ['POSTGRES_USER'], os.environ['POSTGRES_PASSWORD'])
             conn = psycopg2.connect(creds)
@@ -21,17 +21,17 @@ class Postgres(DataSource):
 
         cur = conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
 
-        query = self.query.format(**data) if data else self.query
+        query = context.get('query')
         cur.execute(query)
 
         return pd.DataFrame(cur.fetchall())
 
 class Mongo(DataSource):
     def __init__(self, function, preprocess=None):
-        super().__init__(preprocess)
-        self.function = function
+        super().__init__(Mongo.fetch, preprocess)
+        self.set_context({ 'function': function })
 
-    def run(self, data):
+    def fetch(context):
         try:
             client = MongoClient(os.environ['MONGO_URI'])
             db = client[os.environ['MONGO_DATABASE']]
@@ -39,12 +39,12 @@ class Mongo(DataSource):
             logging.error('Cannot connect to Mongo database')
             exit()
 
-        rows = self.function(db)
+        rows = context.get('function')(db)
         return pd.DataFrame([row for row in rows])
 
 class Request(DataSource):
     def __init__(self):
-        super().__init__()
+        super().__init__(Request.fetch)
 
-    def run(self, data):
-        return pd.DataFrame(data, index=[0])
+    def fetch(context):
+        return pd.DataFrame(context.get('request'), index=[0])

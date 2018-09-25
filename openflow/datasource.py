@@ -7,8 +7,8 @@ class DataSource:
     Args:
         preprocess (lambda): Preprocess DataFrame before transformation
     """
-    def __init__(self, run, preprocess=None):
-        self.run = run
+    def __init__(self, fetch, preprocess=None):
+        self.fetch = fetch
         self.preprocess = preprocess or (lambda df: df)
         self.context = None
         self.df = None
@@ -39,7 +39,7 @@ class DataSource:
 
     def get_dataframe(self, force_computation=False):
         """
-        Preprocesses then transforms the return of run().
+        Preprocesses then transforms the return of fetch().
 
         Args:
             force_computation (bool, optional) : Defaults to False. If set to True, forces the computation of DataFrame at each call.
@@ -50,7 +50,7 @@ class DataSource:
         # returns df if it was already computed
         if self.df is not None and not force_computation: return self.df
 
-        self.df = self.run(self.context)
+        self.df = self.fetch(self.context)
 
         # compute df = transform(preprocess(df)
         self.df = self.preprocess(self.df)
@@ -60,9 +60,9 @@ class DataSource:
 
     def set_context(self, context):
         """
-        Set context for runtime. Will be passed to run() function.
+        Set context for runtime. Will be passed to fetch() function.
 
         Args:
-            context (obj): Context to be passed to run().
+            context (obj): Context to be passed to fetch().
         """
         self.context = context
