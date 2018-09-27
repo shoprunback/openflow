@@ -2,7 +2,7 @@
 
 OpenFlow is a Python library which lets you handle data flows into your application. It uses pandas.DataFrame as its primary tool.
 
-You can find a basic introduction to OpenFlow [here](https://blog.lapw.at/serverless-data-fetching-stack-openfaas-openflow/).
+You can find a basic introduction to OpenFlow in the first part of [this blog post](https://blog.lapw.at/serverless-data-fetching-stack-openfaas-openflow/).
 
 ## Usage
 
@@ -12,7 +12,7 @@ pip install openflow
 
 ## Example
 
-To use OpenFlow, you need to define a `fetch()` function. This function will fetch the data from the source of your choice. In this example, the source will be this [CSV file](https://raw.githubusercontent.com/fivethirtyeight/data/master/bechdel/movies.csv) containing a list of movies.
+To use OpenFlow, you need to define a `fetch()` function. This function will fetch the data from the source of your choice (CSV, Database). In this example, the source will be this [CSV file](https://raw.githubusercontent.com/fivethirtyeight/data/master/bechdel/movies.csv) containing a list of movies.
 
 > The `fetch()` function has to return a **pandas.Dataframe** instance.
 
@@ -52,3 +52,5 @@ print(movies_datasource.get_dataframe(force_computation=True))
 ```
 
 > Three new outputs have been added to the original DataSource.
+
+More complex examples of `fetch()` function can be found [here](https://github.com/shoprunback/openflow/blob/master/examples/datasources.py). They shows how to use Postgres and Mongo as DataSource. Feel free to write your own.
